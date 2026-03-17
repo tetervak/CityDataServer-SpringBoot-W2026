@@ -3,6 +3,8 @@ package ca.tetervak.citydata.controller;
 import ca.tetervak.citydata.data.City;
 import ca.tetervak.citydata.data.CityRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,9 @@ public class CitiesController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Retrieve a city by ID", description = "Returns a city with the specified ID")
+    @Parameters(
+            @Parameter(name = "id", description = "The ID of the city to retrieve", required = true, example = "C001")
+    )
     public ResponseEntity<City> getCityById(@PathVariable String id) {
         log.trace("getCityById() is called with id={}", id);
         return cityRepository.findById(id)
