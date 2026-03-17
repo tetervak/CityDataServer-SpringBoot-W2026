@@ -1,0 +1,68 @@
+{
+  "cities": [
+    {
+      "cityId": "C001",
+      "name": "New York",
+      "population": 8419600,
+      "isCapital": false,
+      "area": 783.8,
+      "country": "USA"
+    },
+    {
+      "cityId": "C002",
+      "name": "Tokyo",
+      "population": 13929286,
+      "isCapital": true,
+      "area": 2194,
+      "country": "Japan"
+    },
+    {
+      "cityId": "C003",
+      "name": "London",
+      "population": 8982000,
+      "isCapital": true,
+      "area": 1572,
+      "country": "UK"
+    },
+    {
+      "cityId": "C004",
+      "name": "Paris",
+      "population": 2148271,
+      "isCapital": true,
+      "area": 105.4,
+      "country": "France"
+    },
+    {
+      "cityId": "C005",
+      "name": "Sydney",
+      "population": 5312163,
+      "isCapital": false,
+      "area": 12367,
+      "country": "Australia"
+    },
+    {
+      "cityId": "C006",
+      "name": "Berlin",
+      "population": 3669491,
+      "isCapital": true,
+      "area": 891.7,
+      "country": "Germany"
+    },
+    {
+      "cityId": "C007",
+      "name": "Moscow",
+      "population": 11920000,
+      "isCapital": true,
+      "area": 2511,
+      "country": "Russia"
+    },
+    {
+      "cityId": "C008",
+      "name": "Toronto",
+      "population": 2731571,
+      "isCapital": false,
+      "area": 630.2,
+      "country": "Canada"
+    }
+  ]
+}
