@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
 @Slf4j
 public class RequestLogFilter implements Filter {
 
