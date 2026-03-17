@@ -2,6 +2,8 @@ package ca.tetervak.citydata.controller;
 
 import ca.tetervak.citydata.data.City;
 import ca.tetervak.citydata.data.CityRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +15,8 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/cities")
+@RequestMapping(value = "/api/cities", produces = "application/json")
+@Tag(name = "Cities", description = "Endpoints for managing cities")
 public class CitiesController {
 
     private final CityRepository cityRepository;
@@ -22,13 +25,15 @@ public class CitiesController {
         this.cityRepository = cityRepository;
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
+    @Operation(summary = "Retrieve all cities", description = "Returns a list of all cities")
     public List<City> getAllCities() {
         log.trace("getAllCities() is called");
         return cityRepository.findAll();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Retrieve a city by ID", description = "Returns a city with the specified ID")
     public ResponseEntity<City> getCityById(@PathVariable String id) {
         log.trace("getCityById() is called with id={}", id);
         return cityRepository.findById(id)
