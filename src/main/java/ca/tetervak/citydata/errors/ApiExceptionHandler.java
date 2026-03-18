@@ -58,7 +58,7 @@ public class ApiExceptionHandler {
         return new ApiError(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getClass().getSimpleName(),
-                ex.getMessage()
+                "No resource found at " + ex.getResourcePath()
         );
     }
 }
