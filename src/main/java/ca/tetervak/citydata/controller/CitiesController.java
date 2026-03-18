@@ -7,11 +7,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -39,10 +42,10 @@ public class CitiesController {
     @Parameters(
             @Parameter(name = "id", description = "The ID of the city to retrieve", required = true, example = "C001")
     )
-    public ResponseEntity<City> getCityById(@PathVariable String id) {
+    public ResponseEntity<City> getCityById(@PathVariable String id) throws NoResourceFoundException {
         log.trace("getCityById() is called with id={}", id);
         return cityRepository.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("City with id '" + id + "' not found"));
+                .orElseThrow(() -> new NoResourceFoundException(HttpMethod.GET, null, "/api/cities/" + id));
     }
 }
