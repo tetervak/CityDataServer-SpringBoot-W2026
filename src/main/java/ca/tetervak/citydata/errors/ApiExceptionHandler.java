@@ -21,7 +21,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(content = @Content(mediaType = "application/json"))
     public ApiError handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error(ex.getMessage(), ex);
+        log.warn(ex.getMessage(), ex);
         var bindingResult = ex.getBindingResult();
         String message = "Validation failed for " + bindingResult.getObjectName() + ". " +
                 bindingResult.getFieldErrors().stream()
@@ -38,7 +38,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(content = @Content(mediaType = "application/json"))
     public ApiError handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.error(ex.getMessage(), ex);
+        log.warn(ex.getMessage(), ex);
         return new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
                 ex.getClass().getSimpleName(),
@@ -50,7 +50,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(content = @Content(mediaType = "application/json"))
     public ApiError handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        log.error(ex.getMessage(), ex);
+        log.warn(ex.getMessage(), ex);
         return new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
                 ex.getClass().getSimpleName(),
@@ -74,7 +74,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ApiResponse(content = @Content(mediaType = "application/json"))
     public ApiError handleNoResourceFoundException(NoResourceFoundException ex) {
-        log.error(ex.getMessage(), ex);
+        log.warn(ex.getMessage(), ex);
         return new ApiError(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getClass().getSimpleName(),
