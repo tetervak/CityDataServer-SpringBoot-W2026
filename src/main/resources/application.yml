@@ -4,18 +4,18 @@ server:
 logging:
   level:
     ca.tetervak: trace
+    org.springframework.security: trace # Added for easier debugging
 
 spring:
   application:
     name: CityDataServer
 
-    #spring.jpa.open-in-view=true
+  # FIXED INDENTATION BELOW
   datasource:
-      url: jdbc:h2:mem:default
-      driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:default
+    driverClassName: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    #spring.jpa.hibernate.ddl-auto=none
   h2:
     console:
       enabled: true
@@ -24,17 +24,15 @@ spring:
     oauth2:
       client:
         registration:
-            # This ID must match what you allow in the Auth Server
           auth-server-client:
             client-id: swagger-client
             client-secret: swagger-secret
             authorization-grant-type: authorization_code
+            # Match exactly with what is in the Auth Server RegisteredClient bean
             scope: openid, profile, read
-            # The standard Spring Security callback path
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           auth-server-client:
-            # The URL of your Identity Service
             issuer-uri: http://localhost:9000
       resourceserver:
         jwt:
@@ -43,21 +41,10 @@ spring:
 springdoc:
   api-docs:
     path: /cities-api-docs
-
   swagger-ui:
     path: /swagger-ui.html
-    #path: /
-
-    # These properties ARE resolved and officially supported
-    #oauth:
-    #  client-id: swagger-client
-    #  client-secret: swagger-secret
-    # Ensures the "Try it out" button is always visible
+    # Uncomment these to save time during testing
+    oauth:
+      client-id: swagger-client
+      client-secret: swagger-secret
     try-it-out-enabled: true
-
-
-
-
-
-
-
