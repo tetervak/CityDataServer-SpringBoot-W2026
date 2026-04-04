@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,19 +25,32 @@ public class SecurityConfig {
      */
     @Bean
     @Order(1)
-    public SecurityFilterChain swaggerFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain uiFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/oauth2/**", "/login/**")
+                .securityMatcher(
+                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
+                        "/secret-page", "/oauth2/**", "/login/**"
+                )
                 .authorizeHttpRequests(auth -> auth
-                        // CHANGE THIS: Let the UI load, but require auth for the "Authorize" button
+                        // 1. Let the documentation be public
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                        // 2. CRITICAL: The OAuth2 endpoints MUST be public
+                        // so the handshake can start and finish!
+                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+
+                        // 3. Only the actual content requires a session
+                        .requestMatchers("/secret-page").authenticated()
+
+                        // 4. Catch-all for this matcher
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults());
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/resource-server-reg")
+                );
 
         return http.build();
     }
-
     /**
      * CHAIN 2: REST API protected by Bearer Tokens
      */
@@ -61,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:9000"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:9000", "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

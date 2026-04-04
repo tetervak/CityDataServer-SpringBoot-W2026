@@ -1,5 +1,9 @@
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        name: RESOURCE_SERVER_SESSION
 
 logging:
   level:
@@ -24,16 +28,30 @@ spring:
     oauth2:
       client:
         registration:
-          auth-server-client:
+          # Swagger uses this registration
+          swagger-client-reg:
+            provider: spring-auth-server # Explicitly pointing to the provider below
             client-id: swagger-client
             client-secret: swagger-secret
             authorization-grant-type: authorization_code
-            # Match exactly with what is in the Auth Server RegisteredClient bean
             scope: openid, profile, read
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+          # Secret Page uses this registration
+          resource-server-reg:
+            provider: spring-auth-server # Explicitly pointing to the same provider
+            client-id: resource-server-client
+            client-secret: resource-server-secret
+            authorization-grant-type: authorization_code
+            scope: openid, profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
         provider:
-          auth-server-client:
+          # Centralized definition of your Port 9000 server
+          spring-auth-server:
             issuer-uri: http://localhost:9000
+
+      # Protects the /api/** endpoints using JWT validation
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9000
