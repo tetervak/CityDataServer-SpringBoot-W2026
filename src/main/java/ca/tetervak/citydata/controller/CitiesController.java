@@ -56,6 +56,7 @@ public class CitiesController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_write')")
     @Operation(summary = "Update an existing city", description = "Updates an existing city entry")
     public ResponseEntity<City> updateCity(@PathVariable String id, @Valid @RequestBody  City city)
      throws  NoResourceFoundException {
@@ -74,6 +75,7 @@ public class CitiesController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_write')")
     @Operation(summary = "Delete a city by ID", description = "Deletes a city with the specified ID")
     public  ResponseEntity<Void> deleteCity(@PathVariable String id) throws  NoResourceFoundException {
         log.trace("deleteCity() is called with id={}", id);
