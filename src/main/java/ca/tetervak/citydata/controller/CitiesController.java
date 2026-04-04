@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -47,6 +48,7 @@ public class CitiesController {
     }
 
     @PostMapping(produces = "application/json")
+    @PreAuthorize("hasAuthority('SCOPE_write')")
     @Operation(summary = "Create a new city", description = "Creates a new city entry")
     public City createCity(@RequestBody @Valid City city) {
         log.trace("createCity() is called with city={}", city);
