@@ -30,6 +30,7 @@ public class CitiesController {
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Retrieve all cities", description = "Returns a list of all cities")
+    @PreAuthorize("hasAuthority('SCOPE_read') and hasAnyRole('USER', 'ADMIN')")
     public List<City> getAllCities() {
         log.trace("getAllCities() is called");
         return cityRepository.findAll();
@@ -40,6 +41,7 @@ public class CitiesController {
     @Parameters(
             @Parameter(name = "id", description = "The ID of the city to retrieve", required = true, example = "C001")
     )
+    @PreAuthorize("hasAuthority('SCOPE_read') and hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<City> getCityById(@PathVariable String id) throws NoResourceFoundException {
         log.trace("getCityById() is called with id={}", id);
         return cityRepository.findById(id)
@@ -48,7 +50,7 @@ public class CitiesController {
     }
 
     @PostMapping(produces = "application/json")
-    @PreAuthorize("hasAuthority('SCOPE_write')")
+    @PreAuthorize("hasAuthority('SCOPE_write') and hasRole('ADMIN')")
     @Operation(summary = "Create a new city", description = "Creates a new city entry")
     public City createCity(@RequestBody @Valid City city) {
         log.trace("createCity() is called with city={}", city);
@@ -56,7 +58,7 @@ public class CitiesController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_write')")
+    @PreAuthorize("hasAuthority('SCOPE_write') and hasRole('ADMIN')")
     @Operation(summary = "Update an existing city", description = "Updates an existing city entry")
     public ResponseEntity<City> updateCity(@PathVariable String id, @Valid @RequestBody  City city)
      throws  NoResourceFoundException {
@@ -75,7 +77,7 @@ public class CitiesController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_write')")
+    @PreAuthorize("hasAuthority('SCOPE_delete') and hasRole('ADMIN')")
     @Operation(summary = "Delete a city by ID", description = "Deletes a city with the specified ID")
     public  ResponseEntity<Void> deleteCity(@PathVariable String id) throws  NoResourceFoundException {
         log.trace("deleteCity() is called with id={}", id);

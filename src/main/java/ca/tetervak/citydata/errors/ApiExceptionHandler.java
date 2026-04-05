@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -80,5 +81,17 @@ public class ApiExceptionHandler {
                 ex.getClass().getSimpleName(),
                 "No resource found at " + ex.getResourcePath()
         );
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ApiResponse(content = @Content(mediaType = "application/json"))
+    public ApiError handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        log.warn(ex.getMessage(), ex);
+        return new ApiError(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getClass().getSimpleName(),
+                ex.getMessage()
+                );
     }
 }
