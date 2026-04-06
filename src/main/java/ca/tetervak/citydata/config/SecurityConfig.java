@@ -1,5 +1,6 @@
 package ca.tetervak.citydata.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -23,6 +24,12 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Value("${app.client-origin}")
+    private String clientOrigin;
+
+    @Value("${app.auth-server-url}")
+    private String authServerUrl;
 
     /**
      * CHAIN 1: Swagger UI protected by OAuth2 Login (SSO)
@@ -90,7 +97,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:9000", "http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", authServerUrl, clientOrigin));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

@@ -1,3 +1,7 @@
+app:
+  auth-server-url: ${AUTH_SERVER_URL:http://localhost:9000}
+  client-origin: ${CLIENT_ORIGIN:http://localhost:3000}
+
 server:
   port: 8080
   servlet:
@@ -49,12 +53,12 @@ spring:
         provider:
           # Centralized definition of your Port 9000 server
           spring-auth-server:
-            issuer-uri: http://localhost:9000
+            issuer-uri: ${app.auth-server-url}
 
       # Protects the /api/** endpoints using JWT validation
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9000
+          issuer-uri: ${app.auth-server-url}
 
 springdoc:
   api-docs:
