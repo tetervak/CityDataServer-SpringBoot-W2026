@@ -25,9 +25,8 @@ public class City {
     @NotNull
     private Integer population;
 
-    @JsonProperty("capital")
     @NotNull
-    private Boolean isCapital;
+    private Boolean capital;
 
     @Min(0)
     @NotNull
