@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
@@ -50,6 +51,18 @@ public class ApiExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 ex.getClass().getSimpleName(),
                 message
+        );
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponse(content = @Content(mediaType = "application/json"))
+    public ApiError handleResponseStatusException(ResponseStatusException ex) {
+        log.warn(ex.getMessage(), ex);
+        return new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getClass().getSimpleName(),
+                ex.getReason()
         );
     }
 

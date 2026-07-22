@@ -12,8 +12,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
@@ -85,25 +87,33 @@ public class CitiesController {
         log.trace("patchCity() is called with id={} and updates={}", id, updates);
         return cityRepository.findById(id)
                 .map(existingCity -> {
-                    updates.forEach((key, value) -> {
-                        switch (key) {
-                            case "name":
-                                existingCity.setName((String) value);
-                                break;
-                            case "population":
-                                existingCity.setPopulation((Integer) value);
-                                break;
-                            case "capital":
-                                existingCity.setCapital((Boolean) value);
-                                break;
-                            case "area":
-                                existingCity.setArea((Double) value);
-                                break;
-                            case "country":
-                                existingCity.setCountry((String) value);
-                                break;
-                        }
-                    });
+                    try {
+                        updates.forEach((key, value) -> {
+                            switch (key) {
+                                case "name":
+                                    existingCity.setName((String) value);
+                                    break;
+                                case "population":
+                                    existingCity.setPopulation((Integer) value);
+                                    break;
+                                case "capital":
+                                    existingCity.setCapital((Boolean) value);
+                                    break;
+                                case "area":
+                                    if (value instanceof Number) {
+                                        existingCity.setArea(((Number) value).doubleValue());
+                                    } else {
+                                        throw new ClassCastException("Field 'area' must be a number.");
+                                    }
+                                    break;
+                                case "country":
+                                    existingCity.setCountry((String) value);
+                                    break;
+                            }
+                        });
+                    } catch (ClassCastException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data type for field.", e);
+                    }
 
                     Set<ConstraintViolation<City>> violations = validator.validate(existingCity);
                     if (!violations.isEmpty()) {
