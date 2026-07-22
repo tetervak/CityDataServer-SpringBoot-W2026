@@ -15,7 +15,7 @@ public class City {
     private String cityId;
     private String name;
     private int population;
-    private boolean isCapital;
+    private boolean capital;
     private double area;
     private String country;
 }
