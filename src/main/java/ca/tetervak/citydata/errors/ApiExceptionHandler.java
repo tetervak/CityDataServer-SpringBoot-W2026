@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -50,6 +51,18 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(content = @Content(mediaType = "application/json"))
     public ApiError handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        log.warn(ex.getMessage(), ex);
+        return new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getClass().getSimpleName(),
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponse(content = @Content(mediaType = "application/json"))
+    public ApiError handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.warn(ex.getMessage(), ex);
         return new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
