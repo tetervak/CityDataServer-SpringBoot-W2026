@@ -62,7 +62,7 @@ public class CitiesController {
                 .map(existingCity -> {
                     existingCity.setName(city.getName());
                     existingCity.setPopulation(city.getPopulation());
-                    existingCity.setCapital(city.isCapital());
+                    existingCity.setIsCapital(city.getIsCapital());
                     existingCity.setArea(city.getArea());
                     existingCity.setCountry(city.getCountry());
                     City updatedCity = cityRepository.save(existingCity);

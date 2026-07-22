@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -21,13 +22,16 @@ public class City {
     private String name;
 
     @Min(0)
-    private int population;
+    @NotNull
+    private Integer population;
 
     @JsonProperty("capital")
-    private boolean isCapital;
+    @NotNull
+    private Boolean isCapital;
 
     @Min(0)
-    private double area;
+    @NotNull
+    private Double area;
 
     @NotBlank
     private String country;
