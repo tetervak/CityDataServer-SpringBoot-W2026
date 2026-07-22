@@ -6,7 +6,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -22,9 +27,11 @@ import java.util.List;
 public class CitiesController {
 
     private final CityRepository cityRepository;
+    private final Validator validator;
 
-    public CitiesController(CityRepository cityRepository) {
+    public CitiesController(CityRepository cityRepository, Validator validator) {
         this.cityRepository = cityRepository;
+        this.validator = validator;
     }
 
     @GetMapping(produces = "application/json")
@@ -70,6 +77,45 @@ public class CitiesController {
                 })
                 .orElseThrow(() -> new NoResourceFoundException(HttpMethod.GET, null, "/api/cities/" + id));
     }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Partially update an existing city", description = "Partially updates an existing city entry")
+    public ResponseEntity<City> patchCity(@PathVariable String id, @RequestBody Map<String, Object> updates)
+            throws NoResourceFoundException {
+        log.trace("patchCity() is called with id={} and updates={}", id, updates);
+        return cityRepository.findById(id)
+                .map(existingCity -> {
+                    updates.forEach((key, value) -> {
+                        switch (key) {
+                            case "name":
+                                existingCity.setName((String) value);
+                                break;
+                            case "population":
+                                existingCity.setPopulation((Integer) value);
+                                break;
+                            case "capital":
+                                existingCity.setCapital((Boolean) value);
+                                break;
+                            case "area":
+                                existingCity.setArea((Double) value);
+                                break;
+                            case "country":
+                                existingCity.setCountry((String) value);
+                                break;
+                        }
+                    });
+
+                    Set<ConstraintViolation<City>> violations = validator.validate(existingCity);
+                    if (!violations.isEmpty()) {
+                        throw new ConstraintViolationException(violations);
+                    }
+
+                    City updatedCity = cityRepository.save(existingCity);
+                    return ResponseEntity.ok(updatedCity);
+                })
+                .orElseThrow(() -> new NoResourceFoundException(HttpMethod.PATCH, null, "/api/cities/" + id));
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a city by ID", description = "Deletes a city with the specified ID")

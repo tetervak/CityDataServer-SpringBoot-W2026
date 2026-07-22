@@ -2,6 +2,7 @@ package ca.tetervak.citydata.errors;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -27,6 +28,23 @@ public class ApiExceptionHandler {
         String message = "Validation failed for " + bindingResult.getObjectName() + ". " +
                 bindingResult.getFieldErrors().stream()
                         .map(fieldError -> "Field " + fieldError.getField() + " " + fieldError.getDefaultMessage())
+                        .collect(Collectors.joining("; "));
+        return new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getClass().getSimpleName(),
+                message
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponse(content = @Content(mediaType = "application/json"))
+    public Object handleConstraintViolationException(ConstraintViolationException ex) {
+        log.warn(ex.getMessage(), ex);
+        var violations = ex.getConstraintViolations();
+        String message = "Validation failed for " +
+                violations.stream()
+                        .map(violation -> "Field " + violation.getPropertyPath() + ": " + violation.getMessage())
                         .collect(Collectors.joining("; "));
         return new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
